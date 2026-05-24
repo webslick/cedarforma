@@ -1,9 +1,10 @@
 const { Op } = require('sequelize');
-const { Lead } = require('../db/models');
+
+const { Lead, CedarLeadPhoto } = require('../db/models');
+
 const telegramService = require('./telegram-service');
 const leadEventService = require('./lead-event-service');
 const reminderService = require('./reminder-service');
-
 function onlyDigits(value = '') {
   return String(value).replace(/\D/g, '');
 }
@@ -21,7 +22,7 @@ class LeadService {
     return { errors, phone };
   }
 
-  async createLead(data) {
+async createLead(data, options = {}) {
     const { errors, phone } = this.validate(data);
     if (Object.keys(errors).length) {
       const error = new Error('VALIDATION_ERROR');
@@ -52,12 +53,21 @@ class LeadService {
       comment: 'Заявка создана с сайта',
     });
 
-    try {
-      const telegramResult = await telegramService.sendLeadNotification(lead);
-      console.log('[LeadService] Telegram notification result:', telegramResult);
-    } catch (error) {
-      console.error('[LeadService] Telegram notification fatal error:', error.response?.data || error.message);
-    }
+if (!options?.skipTelegram) {
+  try {
+    const telegramResult = await telegramService.sendLeadNotification(lead);
+
+    console.log(
+      '[LeadService] Telegram notification result:',
+      telegramResult
+    );
+  } catch (error) {
+    console.error(
+      '[LeadService] Telegram notification fatal error:',
+      error.response?.data || error.message
+    );
+  }
+}
 
     return lead;
   }
@@ -163,6 +173,32 @@ class LeadService {
   async updateLeadStatus(id, status, actor = {}) {
     return this.updateLead(id, { status }, actor);
   }
+
+async getLeadByIdWithPhotos(id) {
+  return Lead.findByPk(id, {
+    include: [
+      {
+        model: CedarLeadPhoto,
+        as: 'photos',
+      },
+    ],
+  });
+}
+
+async sendLeadTelegramNotification(lead) {
+  try {
+    const result = await telegramService.sendLeadNotification(lead);
+    console.log('[LeadService] Telegram notification result:', result);
+    return result;
+  } catch (error) {
+    console.error('[LeadService] Telegram notification failed:', error.response?.data || error.message);
+    return {
+      ok: false,
+      error: error.response?.data || error.message,
+    };
+  }
+}
+
 
   async deleteLead(id, actor = {}) {
     const lead = await Lead.findByPk(id);

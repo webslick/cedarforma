@@ -1,17 +1,43 @@
 const leadService = require('../services/lead-service');
-
+const { CedarLeadPhoto } = require('../db/models');
 class LeadController {
-  async createLead(req, res, next) {
-    try {
-      const lead = await leadService.createLead(req.body);
-      return res.status(201).json({ success: true, lead });
-    } catch (error) {
-      if (error.message === 'VALIDATION_ERROR') {
-        return res.status(400).json({ success: false, errors: error.errors });
-      }
-      next(error);
+async createLead(req, res, next) {
+  try {
+    const lead = await leadService.createLead(req.body, {
+      skipTelegram: true,
+    });
+
+    const files = req.files || [];
+
+    if (files.length) {
+      await CedarLeadPhoto.bulkCreate(
+        files.map((file) => ({
+          leadId: lead.id,
+          fileName: file.filename,
+          originalName: file.originalname,
+          mimeType: file.mimetype,
+          size: file.size,
+          url: `/uploads/leads/${file.filename}`,
+        }))
+      );
     }
+
+    const leadWithPhotos = await leadService.getLeadByIdWithPhotos(lead.id);
+
+    await leadService.sendLeadTelegramNotification(leadWithPhotos || lead);
+
+    return res.status(201).json({
+      success: true,
+      lead: leadWithPhotos || lead,
+    });
+  } catch (error) {
+    if (error.message === 'VALIDATION_ERROR') {
+      return res.status(400).json({ success: false, errors: error.errors });
+    }
+
+    next(error);
   }
+}
 
   async getAllLeads(req, res, next) {
     try {

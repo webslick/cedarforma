@@ -10,7 +10,7 @@ const errorMiddleware = require('./middelwares/error-middleware');
 const { sequelize } = require('./db/models');
 const telegramService = require('./services/telegram-service');
 const reminderService = require('./services/reminder-service');
-
+const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 4000;
 
@@ -30,7 +30,7 @@ app.use('/api/admin-auth', require('./routers/admin-auth.routes'));
 app.use('/api/admin-users', require('./routers/admin-user.routes'));
 
 app.use(errorMiddleware);
-
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 const start = async () => {
   try {
     await sequelize.authenticate();

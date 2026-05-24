@@ -32,7 +32,14 @@ Object.keys(db).forEach((modelName) => {
     db[modelName].associate(db);
   }
 });
-
+if (db.Lead && db.CedarLeadPhoto) {
+  db.Lead.hasMany(db.CedarLeadPhoto, {
+    foreignKey: 'leadId',
+    as: 'photos',
+    onDelete: 'CASCADE',
+  });
+ 
+}
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 

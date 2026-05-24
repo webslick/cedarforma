@@ -50,18 +50,6 @@ function formatDate(value) {
   return new Date(value).toLocaleString('ru-RU');
 }
 
-function getPhotoUrl(url) {
-  if (!url) return '';
-  if (url.startsWith('http')) return url;
-
-  const apiBase =
-    import.meta.env.VITE_API_URL ||
-    api.defaults?.baseURL?.replace('/api', '') ||
-    'http://127.0.0.1:4000';
-
-  return `${apiBase}${url}`;
-}
-
 export default function LeadsPage() {
   const token = localStorage.getItem('adminToken');
   const [leads, setLeads] = useState([]);
@@ -128,28 +116,18 @@ export default function LeadsPage() {
   const update = async (payload = edit) => {
     if (!active) return;
     const { data } = await api.patch(`/leads/${active.id}`, payload);
-    const updatedLead = {
-      ...data.lead,
-      photos: data.lead.photos || active.photos || [],
-    };
-
-    setActive(updatedLead);
-    setLeads((prev) => prev.map((lead) => lead.id === active.id ? updatedLead : lead));
+    setActive(data.lead);
+    setLeads((prev) => prev.map((lead) => lead.id === active.id ? data.lead : lead));
     setMessage('Заявка обновлена');
     await loadEvents(active.id);
   };
 
   const quickStatus = async (lead, status) => {
     const { data } = await api.patch(`/leads/${lead.id}`, { status });
-    const updatedLead = {
-      ...data.lead,
-      photos: data.lead.photos || lead.photos || [],
-    };
-
-    setLeads((prev) => prev.map((item) => item.id === lead.id ? updatedLead : item));
+    setLeads((prev) => prev.map((item) => item.id === lead.id ? data.lead : item));
     if (active?.id === lead.id) {
-      setActive(updatedLead);
-      setEdit((prev) => ({ ...prev, status: updatedLead.status }));
+      setActive(data.lead);
+      setEdit((prev) => ({ ...prev, status: data.lead.status }));
       await loadEvents(lead.id);
     }
   };
@@ -244,29 +222,6 @@ export default function LeadsPage() {
                 </div>
                 <button className="danger-button" onClick={remove}>Удалить</button>
               </div>
-
-              {!!active.photos?.length && (
-                <div className="cf-admin-photos">
-                  {active.photos.map((photo) => {
-                    const photoUrl = getPhotoUrl(photo.url);
-
-                    return (
-                      <a
-                        key={photo.id || photo.url}
-                        href={photoUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        title={photo.originalName || 'Фото участка'}
-                      >
-                        <img
-                          src={photoUrl}
-                          alt={photo.originalName || `Фото заявки ${active.id}`}
-                        />
-                      </a>
-                    );
-                  })}
-                </div>
-              )}
 
               {message && <div className="info">{message}</div>}
 

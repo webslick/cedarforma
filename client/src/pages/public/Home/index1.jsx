@@ -79,69 +79,19 @@ function FeatureIcon({ name }) {
   return <svg {...common}><path d="M24 5l15 6v12c0 10-6 17-15 20C15 40 9 33 9 23V11l15-6z"/><path d="M18 24l4 4 8-9"/></svg>;
 }
 
-function PhotoUploader({ photoPreviews, onChange }) {
-  return (
-    <div className="cf-upload">
-      <label>📸 Фото участка</label>
-      <input type="file" multiple accept="image/*" onChange={onChange} />
-      <small>Можно прикрепить до 8 фото участка, построек или места работ.</small>
-      {!!photoPreviews.length && (
-        <div className="cf-preview-grid">
-          {photoPreviews.map((item, index) => (
-            <div key={`${item.file.name}-${index}`} className="cf-preview-item">
-              <img src={item.url} alt={`Фото участка ${index + 1}`} />
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
 export default function Home() {
   const [form, setForm] = useState({ name: '', phone: '', service: services[0].title, address: '', budget: '', message: '' });
-  const [photos, setPhotos] = useState([]);
-  const [photoPreviews, setPhotoPreviews] = useState([]);
   const [status, setStatus] = useState('idle');
 
   const change = (event) => setForm((prev) => ({ ...prev, [event.target.name]: event.target.value }));
-
-  const handlePhotosChange = (event) => {
-    const files = Array.from(event.target.files || []).slice(0, 8);
-
-    photoPreviews.forEach((item) => URL.revokeObjectURL(item.url));
-
-    setPhotos(files);
-    setPhotoPreviews(files.map((file) => ({ file, url: URL.createObjectURL(file) })));
-  };
-
-  const resetForm = () => {
-    photoPreviews.forEach((item) => URL.revokeObjectURL(item.url));
-    setForm({ name: '', phone: '', service: services[0].title, address: '', budget: '', message: '' });
-    setPhotos([]);
-    setPhotoPreviews([]);
-  };
 
   const submit = async (event) => {
     event.preventDefault();
     setStatus('loading');
 
     try {
-      const formData = new FormData();
-
-      Object.entries(form).forEach(([key, value]) => {
-        formData.append(key, value || '');
-      });
-
-      photos.forEach((photo) => {
-        formData.append('photos', photo);
-      });
-
-      await api.post('/leads', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-
-      resetForm();
+      await api.post('/leads', form);
+      setForm({ name: '', phone: '', service: services[0].title, address: '', budget: '', message: '' });
       setStatus('success');
     } catch (error) {
       setStatus('error');
@@ -199,9 +149,6 @@ export default function Home() {
               {services.map((service) => <option key={service.title}>{service.title}</option>)}
             </select>
             <input name="address" value={form.address} onChange={change} placeholder="Где участок?" />
-
-            <PhotoUploader photoPreviews={photoPreviews} onChange={handlePhotosChange} />
-
             <button className="cf-btn" disabled={status === 'loading'}>{status === 'loading' ? 'Отправляем...' : 'Получить расчёт'}</button>
             {status === 'success' && <small className="cf-success">Заявка отправлена. Порядок победил хаос 🌲</small>}
             {status === 'error' && <small className="cf-error">Не получилось отправить. Проверьте сервер или поля.</small>}
@@ -319,12 +266,7 @@ export default function Home() {
           <input name="address" value={form.address} onChange={change} placeholder="Где находится участок?" />
           <input name="budget" value={form.budget} onChange={change} placeholder="Примерный бюджет / площадь" />
           <textarea name="message" value={form.message} onChange={change} placeholder="Коротко опишите участок: что нужно сделать, где находится, когда хотите начать" />
-
-          <PhotoUploader photoPreviews={photoPreviews} onChange={handlePhotosChange} />
-
           <button className="cf-btn" disabled={status === 'loading'}>{status === 'loading' ? 'Отправляем...' : 'Отправить заявку'}</button>
-          {status === 'success' && <small className="cf-success">Заявка отправлена. Порядок победил хаос 🌲</small>}
-          {status === 'error' && <small className="cf-error">Не получилось отправить. Проверьте сервер или поля.</small>}
         </form>
       </section>
 

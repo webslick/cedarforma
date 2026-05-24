@@ -4,7 +4,7 @@ const router = Router();
 const leadController = require('../controllers/lead_controller');
 const adminAuthMiddleware = require('../middelwares/admin-auth.middleware');
 const leadRateLimit = require('../middelwares/lead-rate-limit.middleware');
-const { leadPhotosUpload } = require('../middlewares/upload.middleware');
+const { leadPhotosUpload } = require('../middelwares/upload.middleware');
 
 router.post(
   '/',

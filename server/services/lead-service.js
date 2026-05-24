@@ -87,7 +87,15 @@ if (!options?.skipTelegram) {
       ];
     }
 
-    const leads = await Lead.findAll({ where, order: [['createdAt', 'DESC']] });
+    const leads = await Lead.findAll({
+  include: [
+    {
+      model: CedarLeadPhoto,
+      as: 'photos',
+    },
+  ],
+  order: [['createdAt', 'DESC']],
+});
     const prepared = leads.map((lead) => {
       const json = lead.toJSON();
       const reason = reminderService.getAttentionReason(lead);

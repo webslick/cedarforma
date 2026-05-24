@@ -667,7 +667,65 @@
   font-family: Georgia, 'Times New Roman', serif;
   font-size: 22px;
 }
+.cf-upload {
+  margin-top: 18px;
+  width: 100%;
+}
 
+.cf-upload label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.cf-upload input[type='file'] {
+  width: 100%;
+  max-width: 100%;
+  font-size: 13px;
+}
+
+.cf-upload small {
+  display: block;
+  margin-top: 8px;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.cf-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+  max-width: 100%;
+}
+
+.cf-preview-item {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.cf-preview-item img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.cf-preview-item:hover img {
+  transform: scale(1.06);
+}
+
+@media (max-width: 640px) {
+  .cf-preview-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
 @keyframes cfFadeUp {
   from { opacity: 0; transform: translateY(24px); }
   to { opacity: 1; transform: translateY(0); }

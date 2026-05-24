@@ -87,7 +87,8 @@ if (!options?.skipTelegram) {
       ];
     }
 
-    const leads = await Lead.findAll({
+const leads = await Lead.findAll({
+  where,
   include: [
     {
       model: CedarLeadPhoto,

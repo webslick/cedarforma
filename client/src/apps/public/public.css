@@ -1,0 +1,17 @@
+.cf-public-app {
+  --green: #234c2f;
+  --green-dark: #102016;
+  --sage: #8fae7f;
+  --sand: #f2eadc;
+  --wood: #8a5a36;
+  --text: #182116;
+  --muted: #63705f;
+  min-height: 100vh;
+  color: var(--text);
+  background: linear-gradient(180deg, #f7f1e7 0%, #e8f0df 100%);
+  font-family: Inter, Arial, sans-serif;
+}
+.cf-public-app * { box-sizing: border-box; }
+.cf-container { width: min(1180px, calc(100% - 32px)); margin: 0 auto; }
+.cf-btn { display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: 999px; padding: 14px 22px; background: var(--green); color: white; font-weight: 800; cursor: pointer; text-decoration: none; }
+.cf-btn.secondary { background: white; color: var(--green); border: 1px solid rgba(35,76,47,.2); }

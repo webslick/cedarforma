@@ -1,0 +1,9 @@
+<svg width="270" height="70" viewBox="0 0 270 70" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="CedarForma">
+  <g transform="translate(10 7)" stroke="#17301F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M27 4V55"/>
+    <path d="M27 8C18 15 11 21 6 29C14 27 21 25 27 20C33 25 40 27 48 29C43 21 36 15 27 8Z" fill="#17301F"/>
+    <path d="M27 18C17 25 10 32 4 42C13 39 21 36 27 30C33 36 41 39 50 42C44 32 37 25 27 18Z" fill="#17301F"/>
+    <path d="M27 31C19 37 13 43 9 51C16 49 22 46 27 42C32 46 38 49 45 51C41 43 35 37 27 31Z" fill="#17301F"/>
+  </g>
+  <text x="76" y="45" fill="#17301F" font-family="Georgia, 'Times New Roman', serif" font-size="36" font-weight="700" letter-spacing="-1.2">CedarForma</text>
+</svg>
